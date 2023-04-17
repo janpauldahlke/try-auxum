@@ -2,17 +2,17 @@
 
 use std::net::SocketAddr;
 
-use axum::{response::Html, routing::get, Router};
+use axum::{
+    response::{Html, IntoResponse},
+    routing::get,
+    Router,
+};
 
 #[tokio::main]
 async fn main() {
-    let routes_hello = Router::new().route(
-        "/hello",
-        get(|| async { Html("Hello <strong> World!!! </strong>") }),
-    );
+    let routes_hello = Router::new().route("/hello", get(handler_hello));
 
     // region : Server
-    //which adress using std
     let address = SocketAddr::from(([127, 0, 0, 1], 8000));
     println!("--> LISTENING on {address}\n");
 
@@ -22,4 +22,13 @@ async fn main() {
         .await
         .unwrap();
     // endregion : Server
+
+    // region : Handler
+
+    async fn handler_hello() -> impl IntoResponse {
+        println!("--> {:12} - hello", "HANDLER");
+        Html("Hello <strong> World!!! </strong>")
+    }
+
+    // endregion : Handler
 }

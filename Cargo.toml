@@ -11,3 +11,6 @@ axum = "0.6"
 
 [dev-dependencies]
 anyhow = "1.0"
+#https://lib.rs/crates/httpc-test
+#check usage in /tests/quick_dev.rs
+httpc-test="0.1.1"
