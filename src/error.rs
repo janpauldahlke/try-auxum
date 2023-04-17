@@ -1,3 +1,8 @@
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+};
+
 pub type Result<T> = core::result::Result<T, Error>;
 
 // for this we keep all errors here
@@ -5,6 +10,20 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Debug)]
 pub enum Error {
     LoginFail,
+}
+
+//this is key to make the error handling work in Axum
+// intoResponse is very important for all work in axum
+impl IntoResponse for Error {
+    fn into_response(self) -> Response {
+        //this will return Axum Response!
+        println!("--> {:<12} - error - {self:?}", "INTORESPONSE");
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "--> unhandled client error",
+        )
+            .into_response()
+    }
 }
 
 // region : ErrorHandling

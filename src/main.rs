@@ -13,12 +13,17 @@ use tower_http::services::ServeDir;
 
 // region: modules
 mod error;
+// note how we re export the error module
+pub use self::error::{Error, Result};
+
+mod web;
 // endregion: modules
 
 #[tokio::main]
 async fn main() {
     let routes_all = Router::new()
         .merge(routes_hello())
+        .merge(web::routes_login::routes())
         .fallback_service(routes_static()); // / collides with our "/hello" route, so we need to use fallback_service
 
     // region : Server
