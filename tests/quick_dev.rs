@@ -8,14 +8,14 @@ async fn quick_dev() -> Result<()> {
     let local = httpc_test::new_client("http://localhost:8000")?;
 
     // Region : Hello
-    local.do_get("/hello?name=jan").await?.print().await?;
-    local.do_get("/hello2/frank").await?.print().await?;
+    //local.do_get("/hello?name=jan").await?.print().await?;
+    //local.do_get("/hello2/frank").await?.print().await?;
     //serve from file or web dir
-    local
-        .do_get("/exposed_web/index.html")
-        .await?
-        .print()
-        .await?;
+    //local
+    //.do_get("/exposed_web/index.html")
+    //.await?
+    //.print()
+    //.await?;
     // endregion : Hello
 
     // Region : Login

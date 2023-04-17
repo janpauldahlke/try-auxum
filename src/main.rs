@@ -48,7 +48,10 @@ struct HelloParams {
 // special middleware layer in axum, that takes response from the router and maps it to another response
 // will become important when we need to distinc between different errors
 async fn main_response_mapper(res: Response) -> Response {
-    println!("--> {:<12} - main_response_mapper - {res:?}", "RES_MAPPER");
+    println!(
+        "--> {:<12} - main_response_mapper - {res:?}",
+        "RES_MAPPER\n"
+    );
     println!("----------------------------------------");
     //for now we just return the response itself
     res
@@ -59,7 +62,7 @@ async fn main_response_mapper(res: Response) -> Response {
 // note the query which is an extractor https://docs.rs/axum/latest/axum/extract/struct.Query.html
 // note `(Query(params): ` which does destructure the query
 async fn handler_hello(Query(params): Query<HelloParams>) -> impl IntoResponse {
-    println!("--> {:<12} - handler_hello - {params:?}", "HANDLER");
+    println!("--> {:<12} - handler_hello - {params:?}", "HANDLER\n");
     let name = params.name.as_deref().unwrap_or("World"); // deref = this gives Option of Reference of String, unwrap_or provides fallback if no argument was given
     Html(format!("Hello <strong> {name} </strong>!"))
 }
