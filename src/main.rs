@@ -11,9 +11,7 @@ use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
-    let routes_hello = Router::new()
-        .route("/hello", get(handler_hello))
-        .route("/hello2/:name", get(handler_hello2));
+    let routes_all = Router::new().merge(routes_hello());
 
     // region : Server
     let address = SocketAddr::from(([127, 0, 0, 1], 8000));
@@ -21,7 +19,7 @@ async fn main() {
 
     //bind the address to the server
     axum::Server::bind(&address)
-        .serve(routes_hello.into_make_service()) //note the .into_make_service() #https://docs.rs/axum/latest/axum/struct.Router.html#method.into_make_service
+        .serve(routes_all.into_make_service()) //note the .into_make_service() #https://docs.rs/axum/latest/axum/struct.Router.html#method.into_make_service
         .await
         .unwrap();
     // endregion : Server
@@ -46,6 +44,11 @@ async fn main() {
         println!("--> {:<12} - handler_hello - {name:?}", "HANDLER");
         Html(format!("Hello <strong> {name} </strong>!"))
     }
-
     // endregion : Handler
+
+    fn routes_hello() -> Router {
+        Router::new()
+            .route("/hello", get(handler_hello))
+            .route("/hello2/:name", get(handler_hello2))
+    }
 }
