@@ -1,12 +1,13 @@
 #![allow(unused)]
 
-use std::net::SocketAddr;
-
 use axum::{
+    extract::Query,
     response::{Html, IntoResponse},
     routing::get,
     Router,
 };
+use serde::Deserialize;
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
@@ -24,10 +25,17 @@ async fn main() {
     // endregion : Server
 
     // region : Handler
+    #[derive(Debug, Deserialize)] //note the serde deps here
+    struct HelloParams {
+        name: Option<String>,
+    }
 
-    async fn handler_hello() -> impl IntoResponse {
-        println!("--> {:12} - hello", "HANDLER");
-        Html("Hello <strong> World!!! </strong>")
+    // note the query which is an extractor https://docs.rs/axum/latest/axum/extract/struct.Query.html
+    // note `(Query(params): ` which does destructure the query
+    async fn handler_hello(Query(params): Query<HelloParams>) -> impl IntoResponse {
+        println!("--> {:<12} - handler_hello - {params:?}", "HANDLER");
+        let name = params.name.as_deref().unwrap_or("World"); // deref = this gives Option of Reference of String, unwrap_or provides fallback if no argument was given
+        Html(format!("Hello <strong> {name} </strong>!"))
     }
 
     // endregion : Handler
