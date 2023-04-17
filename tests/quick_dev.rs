@@ -10,6 +10,7 @@ async fn quick_dev() -> Result<()> {
     // Region : Hello
     local.do_get("/hello?name=jan").await?.print().await?;
     local.do_get("/hello2/frank").await?.print().await?;
+    //serve from file or web dir
     local
         .do_get("/exposed_web/index.html")
         .await?

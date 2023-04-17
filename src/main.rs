@@ -2,7 +2,8 @@
 // region : Imports
 use axum::{
     extract::{Path, Query},
-    response::{Html, IntoResponse},
+    middleware,
+    response::{Html, IntoResponse, Response},
     routing::{get, get_service},
     Router,
 };
@@ -24,6 +25,7 @@ async fn main() {
     let routes_all = Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
+        .layer(middleware::map_response(main_response_mapper)) //note the layer here consuming middleware
         .fallback_service(routes_static()); // / collides with our "/hello" route, so we need to use fallback_service
 
     // region : Server
@@ -41,6 +43,15 @@ async fn main() {
 #[derive(Debug, Deserialize)] //note the serde deps here
 struct HelloParams {
     name: Option<String>,
+}
+
+// special middleware layer in axum, that takes response from the router and maps it to another response
+// will become important when we need to distinc between different errors
+async fn main_response_mapper(res: Response) -> Response {
+    println!("--> {:<12} - main_response_mapper - {res:?}", "RES_MAPPER");
+    println!("----------------------------------------");
+    //for now we just return the response itself
+    res
 }
 
 // region : Handler
