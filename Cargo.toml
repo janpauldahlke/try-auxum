@@ -17,6 +17,8 @@ serde_json = "1.0"
 
 tower-http = { version ="0.4", features = ["fs", "trace"]} #activate filesystem access
 
+tower-cookies = "0.9" #allows setting of cookies
+
 [dev-dependencies]
 anyhow = "1.0"
 #https://lib.rs/crates/httpc-test

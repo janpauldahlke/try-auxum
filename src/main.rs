@@ -9,7 +9,9 @@ use axum::{
 };
 use serde::Deserialize;
 use std::net::SocketAddr;
+use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
+use web::AUTH_TOKEN;
 // endregion : Imports
 
 // region: modules
@@ -23,9 +25,11 @@ mod web;
 #[tokio::main]
 async fn main() {
     let routes_all = Router::new()
+        .merge(routes_cookies())
         .merge(routes_hello())
         .merge(web::routes_login::routes())
         .layer(middleware::map_response(main_response_mapper)) //note the layer here consuming middleware
+        .layer(CookieManagerLayer::new()) //using tower-cookies
         .fallback_service(routes_static()); // / collides with our "/hello" route, so we need to use fallback_service
 
     // region : Server
@@ -84,3 +88,26 @@ fn routes_hello() -> Router {
         .route("/hello2/:name", get(handler_hello2))
 }
 // endregion : Routes
+
+// region cookies
+
+async fn cookie_handler(cookies: Cookies) -> String {
+    let visited = cookies
+        .get(AUTH_TOKEN)
+        .and_then(|c| c.value().parse().ok())
+        .unwrap_or(0);
+    if visited > 10 {
+        cookies.remove(Cookie::new(AUTH_TOKEN, ""));
+        "Counter has been reset".into()
+    } else {
+        cookies.add(Cookie::new(AUTH_TOKEN, (visited + 1).to_string()));
+        format!("You've been here {} times before", visited)
+    }
+}
+
+// cookie routes
+fn routes_cookies() -> Router {
+    Router::new().route("/api/cookies", get(cookie_handler))
+}
+
+// endregion cookies

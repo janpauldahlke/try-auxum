@@ -20,19 +20,27 @@ async fn quick_dev() -> Result<()> {
 
     // Region : Login
     // is correct login
-    local
-        .do_post("/api/login", json!({"username": "jan", "pwd": "123"}))
-        .await?
-        .print()
-        .await?;
+    //local
+    //.do_post("/api/login", json!({"username": "jan", "pwd": "123"}))
+    //.await?
+    //.print()
+    //.await?;
     // is incorrect login
-    local
-        .do_post("/api/login", json!({"username": "paul", "pwd": "456"}))
-        .await?
-        .print()
-        .await?;
-
+    //local
+    //.do_post("/api/login", json!({"username": "paul", "pwd": "456"}))
+    //.await?
+    //.print()
+    //.await?;
     // endregion : Login
+
+    // region cookies
+
+    for n in 1..10 {
+        println!("--> {:<12} - cookies - {n}", "LOOP");
+        local.do_get("/api/cookies").await?.print().await?;
+    }
+
+    // endregion cookies
 
     Ok(())
 }

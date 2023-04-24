@@ -4,8 +4,9 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
+use tower_cookies::{Cookie, Cookies};
 
-use crate::{Error, Result};
+use crate::{web::AUTH_TOKEN, Error, Result};
 
 #[derive(Debug, Deserialize)]
 struct LoginPayLoad {
@@ -14,6 +15,7 @@ struct LoginPayLoad {
 }
 
 async fn api_login(
+    cookies: Cookies, //provided by tower cookies, bound in layer in CookieManagerLayer::new()
     payload: Json<LoginPayLoad>, // note one can has only ONE json extractor per route!!
 ) -> Result<Json<Value>> {
     println!("--> {:<12} - api_login - {payload:?}", "HANDLER");
@@ -24,8 +26,8 @@ async fn api_login(
     }
     //
 
-    //TODO: set cookies
-    //
+    //TODO: real auth-token generation logic
+    cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
 
     //success body
     let body = Json(json!({
