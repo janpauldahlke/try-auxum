@@ -96,7 +96,7 @@ async fn cookie_handler(cookies: Cookies) -> String {
         .get(AUTH_TOKEN)
         .and_then(|c| c.value().parse().ok())
         .unwrap_or(0);
-    if visited > 10 {
+    if visited > 5 {
         cookies.remove(Cookie::new(AUTH_TOKEN, ""));
         "Counter has been reset".into()
     } else {
