@@ -10,6 +10,9 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Debug)]
 pub enum Error {
     LoginFail,
+
+    //ModelErrors TODO: refactor this to be in the model layer
+    TicketDeleteFailIdNotFound { id: u64 },
 }
 
 //this is key to make the error handling work in Axum

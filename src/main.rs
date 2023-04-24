@@ -12,21 +12,28 @@ use std::net::SocketAddr;
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
 use web::AUTH_TOKEN;
+
+use crate::{model::ModelController, web::routes_tickets};
+
+// note how we re export the error module
+pub use self::error::{Error, Result};
+
 // endregion : Imports
 
 // region: modules
 mod error;
-// note how we re export the error module
-pub use self::error::{Error, Result};
-
+mod model;
 mod web;
 // endregion: modules
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
+    let model_controller = ModelController::new().await?;
+
     let routes_all = Router::new()
-        .merge(routes_cookies())
+        .merge(routes_cookies()) //only for testing TODO: remove
         .merge(routes_hello())
+        .nest("/api", routes_tickets::routes(model_controller.clone())) // nest is powerful, since it allow to nest under given prefix, without the routes themself need to know about it
         .merge(web::routes_login::routes())
         .layer(middleware::map_response(main_response_mapper)) //note the layer here consuming middleware
         .layer(CookieManagerLayer::new()) //using tower-cookies
@@ -42,6 +49,8 @@ async fn main() {
         .await
         .unwrap();
     // endregion : Server
+
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)] //note the serde deps here
