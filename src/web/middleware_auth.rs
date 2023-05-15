@@ -78,13 +78,12 @@ impl<S: Send + Sync> FromRequestParts<S> for Ctx {
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
         println!("--> {:<12} - Ctx", "CTX XTRACTOR");
-        let cookies = parts.extract::<Cookies>().await.unwrap();
-        let auth_token = cookies.get(AUTH_TOKEN).map(|t| t.value().to_string());
-        let (user_id, exp, sign) = auth_token
-            .ok_or(Error::AuthFailNoAuthTokenCookie)
-            .and_then(parse_token)?;
 
-        Ok(Ctx::new(user_id))
+        parts
+            .extensions
+            .get::<Result<Ctx>>()
+            .ok_or(Error::AuthFailCtxNotInRequestExt)?
+            .clone()
     }
 }
 // endregion: Ctx Extractor

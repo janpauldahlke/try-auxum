@@ -7,7 +7,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 // for this we keep all errors here
 //later it might be good practice to have a layers of errors
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Error {
     LoginFail,
 
