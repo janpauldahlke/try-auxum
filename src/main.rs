@@ -24,6 +24,7 @@ pub use self::error::{Error, Result};
 // endregion : Imports
 
 // region: modules
+mod ctx;
 mod error;
 mod model;
 mod web;

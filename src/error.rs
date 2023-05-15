@@ -17,6 +17,7 @@ pub enum Error {
     //AuthErrors
     AuthFailNoAuthTokenCookie,
     AuthFailTokenWrongFormat,
+    AuthFailCtxNotInRequestExt,
 }
 
 //this is key to make the error handling work in Axum
