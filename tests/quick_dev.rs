@@ -27,11 +27,11 @@ async fn quick_dev() -> Result<()> {
         .await?;
 
     // // is incorrect login
-    local
-        .do_post("/api/login", json!({"username": "paul", "pwd": "456"}))
-        .await?
-        .print()
-        .await?;
+    // local
+    //     .do_post("/api/login", json!({"username": "paul", "pwd": "456"}))
+    //     .await?
+    //     .print()
+    //     .await?;
     // endregion : Login
 
     // region cookies
