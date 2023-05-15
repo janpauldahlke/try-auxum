@@ -25,7 +25,8 @@ async fn quick_dev() -> Result<()> {
         .await?
         .print()
         .await?;
-    // is incorrect login
+
+    // // is incorrect login
     local
         .do_post("/api/login", json!({"username": "paul", "pwd": "456"}))
         .await?
@@ -42,6 +43,7 @@ async fn quick_dev() -> Result<()> {
     // endregion cookies
 
     // region : Tickets
+    //post a ticket
     let request_to_create_ticket = local
         .do_post(
             "/api/tickets",
@@ -53,6 +55,15 @@ async fn quick_dev() -> Result<()> {
         .await?
         .print()
         .await?;
+
+    //get a list of ticket
+    local.do_get("/api/tickets").await?.print().await?;
+    //delete a ticket
+    local.do_delete("/api/tickets/1").await?.print().await?; // bewaere, there is not always a ticket with id 1
+
+    // verfiy deletion // comment in/out
+    local.do_get("/api/tickets").await?.print().await?;
+
     // endregion : Tickets
 
     Ok(())

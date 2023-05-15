@@ -13,6 +13,10 @@ pub enum Error {
 
     //ModelErrors TODO: refactor this to be in the model layer
     TicketDeleteFailIdNotFound { id: u64 },
+
+    //AuthErrors
+    AuthFailNoAuthTokenCookie,
+    AuthFailTokenWrongFormat,
 }
 
 //this is key to make the error handling work in Axum

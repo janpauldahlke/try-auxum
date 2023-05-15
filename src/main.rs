@@ -13,7 +13,10 @@ use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
 use web::AUTH_TOKEN;
 
-use crate::{model::ModelController, web::routes_tickets};
+use crate::{
+    model::ModelController,
+    web::{middleware_auth::mw_require_auth, routes_tickets},
+};
 
 // note how we re export the error module
 pub use self::error::{Error, Result};
@@ -30,10 +33,13 @@ mod web;
 async fn main() -> Result<()> {
     let model_controller = ModelController::new().await?;
 
+    let routes_apis = routes_tickets::routes(model_controller.clone())
+        .route_layer(middleware::from_fn(mw_require_auth)); //this ensures the cookie paser middleware is only applied to api routes
+
     let routes_all = Router::new()
         .merge(routes_cookies()) //only for testing TODO: remove
         .merge(routes_hello())
-        .nest("/api", routes_tickets::routes(model_controller.clone())) // nest is powerful, since it allow to nest under given prefix, without the routes themself need to know about it
+        .nest("/api", routes_apis) // nest is powerful, since it allow to nest under given prefix, without the routes themself need to know about it
         .merge(web::routes_login::routes())
         .layer(middleware::map_response(main_response_mapper)) //note the layer here consuming middleware
         .layer(CookieManagerLayer::new()) //using tower-cookies

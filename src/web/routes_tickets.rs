@@ -10,7 +10,7 @@ async fn create_ticket(
     State(model_controller): State<ModelController>, /* a trick, we use the modelcontrol as state  https://docs.rs/axum/latest/axum/#using-the-state-extractor*/
     Json(ticket_for_create): Json<TicketForCreate>,
 ) -> Result<Json<Ticket>> {
-    println!("-->s {:<12} create_ticket", "HANDLER");
+    println!("--> {:<12} create_ticket", "HANDLER");
     let ticket = model_controller.create_ticket(ticket_for_create).await?;
     Ok(Json(ticket))
 }
@@ -20,7 +20,7 @@ async fn create_ticket(
 async fn list_tickets(
     State(model_controller): State<ModelController>,
 ) -> Result<Json<Vec<Ticket>>> {
-    println!("-->s {:<12} list_tickets", "HANDLER");
+    println!("--> {:<12} list_tickets", "HANDLER");
     let tickets = model_controller.list_tickets().await?;
     Ok(Json(tickets))
 }
@@ -30,7 +30,7 @@ async fn delete_ticket(
     State(model_controller): State<ModelController>,
     Path(ticket_id): Path<u64>, // from path to respect REST API
 ) -> Result<Json<Ticket>> {
-    println!("-->s {:<12} delete_ticket", "HANDLER");
+    println!("--> {:<12} delete_ticket", "HANDLER");
     let ticket = model_controller.delete_ticket(ticket_id).await?;
     Ok(Json(ticket))
 }
