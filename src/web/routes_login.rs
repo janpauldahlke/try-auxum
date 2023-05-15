@@ -26,7 +26,8 @@ async fn api_login(
     }
     //
 
-    //TODO: real auth-token generation logic
+    //breaks token
+    //cookies.add(Cookie::new(AUTH_TOKEN, "DDDDDDDDDuser-1.exp.sign"));
     cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
 
     //success body

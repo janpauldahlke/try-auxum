@@ -14,7 +14,10 @@ pub async fn mw_require_auth<B>(
 ) -> Result<Response> {
     println!("--> {:<12} => mw_require_auth", "MIDDLEWARE");
     let auth_token = cookies.get(AUTH_TOKEN).map(|t| t.value().to_string());
-    auth_token.ok_or(Error::AuthFailNoAuthTokenCookie)?;
+    let (user_id, exp, sign) = auth_token
+        .ok_or(Error::AuthFailNoAuthTokenCookie)
+        .and_then(parse_token)?;
+    //TODO:  business logic: validate token components, agains user_database and ...
     Ok(next.run(req).await)
 }
 
