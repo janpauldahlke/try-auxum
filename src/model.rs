@@ -11,7 +11,7 @@
       -------
 */
 
-use crate::{Error, Result};
+use crate::{ctx::Ctx, Error, Result};
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex}; // in memory store
 
@@ -19,6 +19,7 @@ use std::sync::{Arc, Mutex}; // in memory store
 #[derive(Clone, Debug, Serialize)]
 pub struct Ticket {
     pub id: u64,
+    pub cid: u64, //creator_user_id
     pub title: String,
 }
 
@@ -52,18 +53,23 @@ impl ModelController {
 
 //copilot is actually pretty smart on this one
 impl ModelController {
-    pub async fn create_ticket(&self, ticket_for_create: TicketForCreate) -> Result<Ticket> {
+    pub async fn create_ticket(
+        &self,
+        ctx: Ctx,
+        ticket_for_create: TicketForCreate,
+    ) -> Result<Ticket> {
         let mut ticket_store = self.ticket_store.lock().unwrap(); // handle mutex lock
         let id = ticket_store.len() as u64; // little hacky since index +1 only works since rust has exclusive ownership of the mutex
         let ticket = Ticket {
             id,
+            cid: ctx.user_id,
             title: ticket_for_create.title,
         };
         ticket_store.push(Some(ticket.clone())); // push as option to the store as clone
         Ok(ticket)
     }
 
-    pub async fn list_tickets(&self) -> Result<Vec<Ticket>> {
+    pub async fn list_tickets(&self, ctx: Ctx) -> Result<Vec<Ticket>> {
         let store = self.ticket_store.lock().unwrap();
         let tickets = store
             .iter()
@@ -72,7 +78,7 @@ impl ModelController {
         Ok(tickets)
     }
 
-    pub async fn delete_ticket(&self, id: u64) -> Result<Ticket> {
+    pub async fn delete_ticket(&self, ctx: Ctx, id: u64) -> Result<Ticket> {
         let mut store = self.ticket_store.lock().unwrap();
         let ticket = store.get_mut(id as usize).and_then(|ticket| ticket.take());
 

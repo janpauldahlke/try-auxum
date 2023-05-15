@@ -62,7 +62,7 @@ async fn quick_dev() -> Result<()> {
     local.do_delete("/api/tickets/1").await?.print().await?; // bewaere, there is not always a ticket with id 1
 
     // verfiy deletion // comment in/out
-    local.do_get("/api/tickets").await?.print().await?;
+    //local.do_get("/api/tickets").await?.print().await?;
 
     // endregion : Tickets
 

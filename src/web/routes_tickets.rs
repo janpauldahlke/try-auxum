@@ -1,3 +1,4 @@
+use crate::ctx::Ctx;
 use crate::model::{ModelController, Ticket, TicketForCreate};
 use crate::Result;
 use axum::extract::{FromRef, Path}; // consider change of cargo toml to use axum-macros
@@ -8,10 +9,13 @@ use axum::{extract::State, Json};
 //region : REST handlers
 async fn create_ticket(
     State(model_controller): State<ModelController>, /* a trick, we use the modelcontrol as state  https://docs.rs/axum/latest/axum/#using-the-state-extractor*/
+    ctx: Ctx,
     Json(ticket_for_create): Json<TicketForCreate>,
 ) -> Result<Json<Ticket>> {
     println!("--> {:<12} create_ticket", "HANDLER");
-    let ticket = model_controller.create_ticket(ticket_for_create).await?;
+    let ticket = model_controller
+        .create_ticket(ctx, ticket_for_create)
+        .await?;
     Ok(Json(ticket))
 }
 
@@ -19,19 +23,21 @@ async fn create_ticket(
 //TODO: we could implement filters for arguments here
 async fn list_tickets(
     State(model_controller): State<ModelController>,
+    ctx: Ctx,
 ) -> Result<Json<Vec<Ticket>>> {
     println!("--> {:<12} list_tickets", "HANDLER");
-    let tickets = model_controller.list_tickets().await?;
+    let tickets = model_controller.list_tickets(ctx).await?;
     Ok(Json(tickets))
 }
 
 //boilerplate from here on, since we have our stuff imlemented in the modelcontroller
 async fn delete_ticket(
     State(model_controller): State<ModelController>,
+    ctx: Ctx,
     Path(ticket_id): Path<u64>, // from path to respect REST API
 ) -> Result<Json<Ticket>> {
     println!("--> {:<12} delete_ticket", "HANDLER");
-    let ticket = model_controller.delete_ticket(ticket_id).await?;
+    let ticket = model_controller.delete_ticket(ctx, ticket_id).await?;
     Ok(Json(ticket))
 }
 //endregion : REST handlers
